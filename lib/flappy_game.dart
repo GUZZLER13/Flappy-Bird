@@ -1,11 +1,27 @@
 import 'dart:ui';
 
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:flappy_bird/composants/background.dart';
 
 class FlappyGame extends Game {
+  Size screenSize;
+  Background background;
+
+  //Constructeur
+  FlappyGame() {
+    initialize();
+
+  }
+
+  void initialize() async{
+    resize(await Flame.util.initialDimensions());
+    background = Background(this);
+  }
+
   @override
   void render(Canvas canvas) {
-    // TODO: implement render
+    background.render(canvas);
   }
 
   @override
@@ -13,4 +29,9 @@ class FlappyGame extends Game {
     // TODO: implement update
   }
 
+  @override
+  void resize(Size size) {
+    super.resize(size);
+    screenSize = size;
+  }
 }

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 void main() {
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   Util flameUtil = Util();
 
   //Forcer mode plein écran
@@ -17,7 +19,6 @@ void main() {
   FlappyGame game = FlappyGame();
 
   runApp(game.widget);
-
 
 }
 
