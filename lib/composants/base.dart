@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/sprite.dart';
 import 'package:flappy_bird/flappy_game.dart';
+import 'package:flutter/cupertino.dart';
 
 const double BASE_MOVEMENT = 130;
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   Util flameUtil = Util();
@@ -19,7 +18,4 @@ void main() {
   FlappyGame game = FlappyGame();
 
   runApp(game.widget);
-
 }
-
-
