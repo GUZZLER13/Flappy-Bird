@@ -6,6 +6,7 @@ import 'package:flame/gestures.dart';
 import 'package:flame/time.dart';
 import 'package:flappy_bird/composants/background.dart';
 import 'package:flappy_bird/composants/base.dart';
+import 'package:flappy_bird/composants/game_over.dart';
 import 'package:flappy_bird/composants/pipes.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -20,6 +21,8 @@ class FlappyGame extends Game with TapDetector {
   List<Pipes> pipeList = [];
   Timer timer;
   Bird bird;
+  GameOverScreen endMessage;
+  bool isPlaying = true;
 
   //Constructor
   FlappyGame() {
@@ -42,21 +45,29 @@ class FlappyGame extends Game with TapDetector {
     bird = Bird(this);
 
     timer.start();
+    endMessage = GameOverScreen(this);
   }
 
   @override
   void render(Canvas canvas) {
     //Ordre des éléments ici très important ---> comme des calques
     background.render(canvas);
-    for (var element in pipeList) {
-      element.render(canvas);
+
+    if (isPlaying) {
+      //on affiche les tubes
+      for (var element in pipeList) {
+        element.render(canvas);
+      }
+      //affiche le bird
+      bird.render(canvas);
+    } else{
+      endMessage.render(canvas);
     }
+
     for (var element in baseList) {
       element.render(canvas);
     }
 
-    //affiche le bird
-    bird.render(canvas);
   }
 
   @override
@@ -111,17 +122,22 @@ class FlappyGame extends Game with TapDetector {
     for (var element in pipeList) {
       if (element.hasCollided(bird.birdRect)) {
         print('on a touché un tube');
+        isPlaying = false;
       }
     }
     //check si le bird touche le sol
     for (var element in baseList) {
       if (element.hasCollided(bird.birdRect)) {
         print('on a touché le sol');
+        isPlaying = false;
+
       }
     }
     //check si le bird touche le "plafond"
     if (bird.birdRect.top <= 0) {
       print('on a touché le plafond');
+      isPlaying = false;
+
     }
   }
 }

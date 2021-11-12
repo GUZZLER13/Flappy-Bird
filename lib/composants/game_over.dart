@@ -10,12 +10,16 @@ class GameOverScreen {
   final FlappyGame game;
 
   GameOverScreen(this.game) {
-    messageSprite = Sprite ('background.png');
+    messageSprite = Sprite('message.png');
+    messageRect = Rect.fromCenter(
+        center: Offset(game.screenSize.width / 2, game.screenSize.height / 2),
+        width: 276,
+        height: 400);
   }
-
-
 
   void update(double t) {}
 
-  void render(Canvas canvas) {}
+  void render(Canvas canvas) {
+    messageSprite.renderRect(canvas, messageRect);
+  }
 }
