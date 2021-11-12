@@ -45,6 +45,7 @@ class Bird {
     }
 
     birdRect = birdRect.translate(0, birdMovement);
+
   }
 
   void render(Canvas canvas) {
@@ -57,10 +58,10 @@ class Bird {
     canvas.save();
     //deplace l'origine du canvas
     canvas.translate(
-        50 + (BIRD_WIDTH / 2), birdRect.bottom - (BIRD_HEIGHT / 2));
+        birdRect.left + (BIRD_WIDTH / 2), birdRect.bottom - (BIRD_HEIGHT / 2));
 
     //applique la rotation
-    canvas.rotate(birdMovement * 0.06);
+    canvas.rotate(birdMovement * 0.07);
 
     // on affiche le bird
     birdSprite.renderRect(canvas, const Rect.fromLTWH(0, 0, BIRD_WIDTH, BIRD_HEIGHT));

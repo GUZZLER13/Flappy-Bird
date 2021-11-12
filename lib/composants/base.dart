@@ -4,7 +4,7 @@ import 'package:flame/sprite.dart';
 import 'package:flappy_bird/flappy_game.dart';
 import 'package:flutter/cupertino.dart';
 
-const double BASE_MOVEMENT = 130;
+double baseMovement = 130;
 
 class Base {
   Rect baseRect;
@@ -24,7 +24,8 @@ class Base {
   }
 
   void update(double t) {
-    baseRect = baseRect.translate(-t * BASE_MOVEMENT, 0);
+    baseRect = baseRect.translate(-t * baseMovement, 0);
+    // baseMovement += 0.01;
 
     //si le rectangle de droite sort de l'écran
     if (baseRect.right <= 0) {
@@ -34,5 +35,13 @@ class Base {
 
   void render(Canvas canvas) {
     baseSprite.renderRect(canvas, baseRect);
+  }
+
+  bool hasCollided(Rect myRect) {
+    if (baseRect.overlaps(myRect)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

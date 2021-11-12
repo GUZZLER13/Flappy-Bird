@@ -11,7 +11,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'composants/bird.dart';
 
-class FlappyGame extends Game with TapDetector{
+double speedCreatePipes = 2;
+
+class FlappyGame extends Game with TapDetector {
   Size screenSize;
   Background background;
   List<Base> baseList;
@@ -32,7 +34,7 @@ class FlappyGame extends Game with TapDetector{
     //sol
     createBase();
     //pipes
-    timer = Timer(2, repeat: true, callback: () {
+    timer = Timer(speedCreatePipes, repeat: true, callback: () {
       Pipes newPipes = Pipes(this);
       pipeList.add(newPipes);
     });
@@ -59,7 +61,6 @@ class FlappyGame extends Game with TapDetector{
 
   @override
   void update(double t) {
-
     timer.update(t);
 
     //déplacement des tubes
@@ -81,8 +82,7 @@ class FlappyGame extends Game with TapDetector{
     }
 
     bird.update(t);
-
-
+    gameOver();
   }
 
   @override
@@ -104,6 +104,24 @@ class FlappyGame extends Game with TapDetector{
     super.onTap();
     print('onTap');
     bird.onTap();
+  }
 
+  void gameOver() {
+    //check si le bird touche les tubes
+    for (var element in pipeList) {
+      if (element.hasCollided(bird.birdRect)) {
+        print('on a touché un tube');
+      }
+    }
+    //check si le bird touche le sol
+    for (var element in baseList) {
+      if (element.hasCollided(bird.birdRect)) {
+        print('on a touché le sol');
+      }
+    }
+    //check si le bird touche le "plafond"
+    if (bird.birdRect.top <= 0) {
+      print('on a touché le plafond');
+    }
   }
 }

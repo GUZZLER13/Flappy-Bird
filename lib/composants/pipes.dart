@@ -4,9 +4,10 @@ import 'dart:ui';
 import 'package:flame/sprite.dart';
 import 'package:flappy_bird/flappy_game.dart';
 
+import 'base.dart';
+
 const double PIPE_WIDTH = 70;
 const double PIPE_HEAD_HEIGHT = 24;
-const double PIPE_MOVEMENT = 130;
 const double SPACE_BETWEEN_PIPES = 180;
 
 class Pipes {
@@ -77,10 +78,12 @@ class Pipes {
   }
 
   void update(double t) {
-    bottomPipeBodyRect = bottomPipeBodyRect.translate(-t * PIPE_MOVEMENT, 0);
-    bottomPipeHeadRect = bottomPipeHeadRect.translate(-t * PIPE_MOVEMENT, 0);
-    topPipeBodyRect = topPipeBodyRect.translate(-t * PIPE_MOVEMENT, 0);
-    topPipeHeadRect = topPipeHeadRect.translate(-t * PIPE_MOVEMENT, 0);
+    bottomPipeBodyRect = bottomPipeBodyRect.translate(-t * baseMovement, 0);
+    bottomPipeHeadRect = bottomPipeHeadRect.translate(-t * baseMovement, 0);
+    topPipeBodyRect = topPipeBodyRect.translate(-t * baseMovement, 0);
+    topPipeHeadRect = topPipeHeadRect.translate(-t * baseMovement, 0);
+
+    // baseMovement += 0.01;
 
     // on vérifie si le tube est sorti
     if (topPipeHeadRect.right < 0) {
@@ -100,5 +103,16 @@ class Pipes {
 
     //affiche la tête du bottom pipe
     bottomPipeHeadSprite.renderRect(canvas, bottomPipeHeadRect);
+  }
+
+  bool hasCollided(Rect myRect) {
+    if (topPipeBodyRect.overlaps(myRect) ||
+        topPipeHeadRect.overlaps(myRect) ||
+        bottomPipeBodyRect.overlaps(myRect) ||
+        bottomPipeHeadRect.overlaps(myRect)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
