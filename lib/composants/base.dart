@@ -13,6 +13,7 @@ class Base {
   final double leftPosition;
   bool isVisible = true;
 
+  //Constructor
   Base(this.game, this.leftPosition) {
     baseSprite = Sprite('base.png');
     baseRect = Rect.fromLTWH(
@@ -24,6 +25,7 @@ class Base {
 
   void update(double t) {
     baseRect = baseRect.translate(-t * BASE_MOVEMENT, 0);
+
     //si le rectangle de droite sort de l'écran
     if (baseRect.right <= 0) {
       isVisible = false;
