@@ -29,6 +29,8 @@ class Pipes {
 
   bool isVisible = true;
 
+  bool canUpdateScore = true;
+
   //Constructor
   Pipes(this.game) {
     //on initialise la liste des hauteurs

@@ -1,20 +1,22 @@
-import 'dart:math';
 import 'dart:ui';
 
+import 'package:flame/anchor.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
+import 'package:flame/position.dart';
+import 'package:flame/text_config.dart';
 import 'package:flame/time.dart';
 import 'package:flappy_bird/composants/background.dart';
 import 'package:flappy_bird/composants/base.dart';
 import 'package:flappy_bird/composants/game_over.dart';
 import 'package:flappy_bird/composants/pipes.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'composants/bird.dart';
 
-double speedCreatePipes = 0.2;
-
+double speedCreatePipes = 1.5;
 
 class FlappyGame extends Game with TapDetector {
   Size screenSize;
@@ -25,6 +27,8 @@ class FlappyGame extends Game with TapDetector {
   Bird bird;
   GameOverScreen endMessage;
   bool isPlaying = false;
+  int score = 0;
+  TextConfig scoreTextConfig;
 
   //Constructor
   FlappyGame() {
@@ -52,11 +56,14 @@ class FlappyGame extends Game with TapDetector {
 
     timer.start();
     endMessage = GameOverScreen(this);
+
+    //initialize TextConfig
+    scoreTextConfig = TextConfig(
+        fontSize: 70, fontFamily: 'flappy_font', color: Colors.white);
   }
 
   @override
   void render(Canvas canvas) {
-
     //Ordre des éléments ici très important ---> comme des calques
     background.render(canvas);
 
@@ -67,6 +74,11 @@ class FlappyGame extends Game with TapDetector {
       }
       //affiche le bird
       bird.render(canvas);
+
+      //on affiche le score
+      scoreTextConfig.render(canvas, score.toString(),
+          Position(screenSize.width / 2, screenSize.height / 8),
+          anchor: Anchor.center);
     } else {
       endMessage.render(canvas);
     }
@@ -79,8 +91,6 @@ class FlappyGame extends Game with TapDetector {
   @override
   void update(double t) {
     if (isPlaying) {
-
-
       timer.update(t);
 
       //déplacement des tubes
@@ -92,7 +102,7 @@ class FlappyGame extends Game with TapDetector {
       pipeList.removeWhere((element) => !element.isVisible);
 
       bird.update(t);
-
+      updateScore();
       gameOver();
     }
 
@@ -159,5 +169,19 @@ class FlappyGame extends Game with TapDetector {
     isPlaying = false;
     timer.stop();
     bird = Bird(this);
+    score = 0;
+  }
+
+  void updateScore() {
+    pipeList.forEach((element) {
+      if (element.canUpdateScore) {
+        if (bird.birdRect.right >=
+            element.topPipeBodyRect.left + element.topPipeBodyRect.width / 2) {
+          score++;
+          Flame.audio.play('point.wav');
+          element.canUpdateScore = false;
+        }
+      }
+    });
   }
 }
