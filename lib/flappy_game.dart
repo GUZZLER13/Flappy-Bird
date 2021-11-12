@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/flame.dart';
@@ -12,7 +13,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'composants/bird.dart';
 
-double speedCreatePipes = 2;
+double speedCreatePipes = 0.2;
+
 
 class FlappyGame extends Game with TapDetector {
   Size screenSize;
@@ -22,7 +24,7 @@ class FlappyGame extends Game with TapDetector {
   Timer timer;
   Bird bird;
   GameOverScreen endMessage;
-  bool isPlaying = true;
+  bool isPlaying = false;
 
   //Constructor
   FlappyGame() {
@@ -32,15 +34,19 @@ class FlappyGame extends Game with TapDetector {
   // On crée cette fonction pour attendre les dimensions de l'écran avant de lancer la premiere boucle
   void initialize() async {
     resize(await Flame.util.initialDimensions());
+
     //fond d'écran
     background = Background(this);
+
     //sol
     createBase();
+
     //pipes
     timer = Timer(speedCreatePipes, repeat: true, callback: () {
       Pipes newPipes = Pipes(this);
       pipeList.add(newPipes);
     });
+
     //bird
     bird = Bird(this);
 
@@ -50,6 +56,7 @@ class FlappyGame extends Game with TapDetector {
 
   @override
   void render(Canvas canvas) {
+
     //Ordre des éléments ici très important ---> comme des calques
     background.render(canvas);
 
@@ -60,27 +67,34 @@ class FlappyGame extends Game with TapDetector {
       }
       //affiche le bird
       bird.render(canvas);
-    } else{
+    } else {
       endMessage.render(canvas);
     }
 
     for (var element in baseList) {
       element.render(canvas);
     }
-
   }
 
   @override
   void update(double t) {
-    timer.update(t);
+    if (isPlaying) {
 
-    //déplacement des tubes
-    for (var element in pipeList) {
-      element.update(t);
+
+      timer.update(t);
+
+      //déplacement des tubes
+      for (var element in pipeList) {
+        element.update(t);
+      }
+
+      //supprimer les pipes qui ne sont plus visibles de la liste de pipes
+      pipeList.removeWhere((element) => !element.isVisible);
+
+      bird.update(t);
+
+      gameOver();
     }
-
-    //supprimer les pipes qui ne sont plus visibles de la liste de pipes
-    pipeList.removeWhere((element) => !element.isVisible);
 
     for (var base in baseList) {
       base.update(t);
@@ -91,9 +105,6 @@ class FlappyGame extends Game with TapDetector {
     if (baseList.length < 2) {
       createBase();
     }
-
-    bird.update(t);
-    gameOver();
   }
 
   @override
@@ -113,31 +124,40 @@ class FlappyGame extends Game with TapDetector {
   @override
   void onTap() {
     super.onTap();
-    print('onTap');
-    bird.onTap();
+    if (isPlaying) {
+      bird.onTap();
+    } else {
+      pipeList.clear();
+      isPlaying = true;
+      timer.start();
+    }
   }
 
   void gameOver() {
     //check si le bird touche les tubes
     for (var element in pipeList) {
       if (element.hasCollided(bird.birdRect)) {
-        print('on a touché un tube');
-        isPlaying = false;
+        Flame.audio.play('hit.wav');
+        reset();
       }
     }
     //check si le bird touche le sol
     for (var element in baseList) {
       if (element.hasCollided(bird.birdRect)) {
-        print('on a touché le sol');
-        isPlaying = false;
-
+        Flame.audio.play('hit.wav');
+        reset();
       }
     }
     //check si le bird touche le "plafond"
     if (bird.birdRect.top <= 0) {
-      print('on a touché le plafond');
-      isPlaying = false;
-
+      Flame.audio.play('hit.wav');
+      reset();
     }
+  }
+
+  void reset() {
+    isPlaying = false;
+    timer.stop();
+    bird = Bird(this);
   }
 }

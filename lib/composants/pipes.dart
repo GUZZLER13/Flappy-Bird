@@ -50,6 +50,7 @@ class Pipes {
     ];
 
     int index = Random().nextInt(heights.length);
+
     topPipeBodySprite = Sprite('pipe_body.png');
     topPipeHeadSprite = Sprite('pipe_head.png');
     bottomPipeBodySprite = Sprite('pipe_body.png');
@@ -57,24 +58,34 @@ class Pipes {
 
     double topPipesBodyHeight = heights[index];
 
-    //RECT du pipe du haut
-    topPipeBodyRect = Rect.fromLTWH(
-        game.screenSize.width + 10, 0, PIPE_WIDTH, topPipesBodyHeight);
+    //RECT du headPipe du haut
     topPipeHeadRect = Rect.fromLTWH(game.screenSize.width + 10,
         topPipesBodyHeight, PIPE_WIDTH + 2, PIPE_HEAD_HEIGHT);
 
-    // RECT du pipe du bas
-    bottomPipeBodyRect = Rect.fromLTWH(
-        game.screenSize.width + 10,
-        topPipesBodyHeight + PIPE_HEAD_HEIGHT * 2 + SPACE_BETWEEN_PIPES,
-        PIPE_WIDTH,
-        game.screenSize.height -
-            (topPipesBodyHeight + PIPE_HEAD_HEIGHT * 2 + SPACE_BETWEEN_PIPES));
+    //RECT du bodyPipe du haut
+    topPipeBodyRect = Rect.fromLTWH(
+        game.screenSize.width + 10, 0, PIPE_WIDTH, topPipesBodyHeight);
+
+    //RECT du headPipe du bas
     bottomPipeHeadRect = Rect.fromLTWH(
         game.screenSize.width + 10,
         topPipesBodyHeight + PIPE_HEAD_HEIGHT + SPACE_BETWEEN_PIPES,
         PIPE_WIDTH + 2,
         PIPE_HEAD_HEIGHT);
+
+    //RECT du bodyPipe du bas
+    bottomPipeBodyRect = Rect.fromLTWH(
+        game.screenSize.width + 10,
+        topPipesBodyHeight +
+            PIPE_HEAD_HEIGHT +
+            SPACE_BETWEEN_PIPES +
+            PIPE_HEAD_HEIGHT,
+        PIPE_WIDTH,
+        game.screenSize.height -
+            (topPipesBodyHeight +
+                PIPE_HEAD_HEIGHT +
+                SPACE_BETWEEN_PIPES +
+                PIPE_HEAD_HEIGHT));
   }
 
   void update(double t) {

@@ -4,7 +4,7 @@ import 'package:flame/sprite.dart';
 import 'package:flappy_bird/flappy_game.dart';
 import 'package:flutter/cupertino.dart';
 
-double baseMovement = 130;
+double baseMovement = 200;
 
 class Base {
   Rect baseRect;
