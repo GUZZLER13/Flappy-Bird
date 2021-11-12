@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:flame/gestures.dart';
 import 'package:flame/time.dart';
 import 'package:flappy_bird/composants/background.dart';
 import 'package:flappy_bird/composants/base.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'composants/bird.dart';
 
-class FlappyGame extends Game {
+class FlappyGame extends Game with TapDetector{
   Size screenSize;
   Background background;
   List<Base> baseList;
@@ -37,7 +38,7 @@ class FlappyGame extends Game {
     });
     //bird
     bird = Bird(this);
-    
+
     timer.start();
   }
 
@@ -58,7 +59,16 @@ class FlappyGame extends Game {
 
   @override
   void update(double t) {
+
     timer.update(t);
+
+    //déplacement des tubes
+    for (var element in pipeList) {
+      element.update(t);
+    }
+
+    //supprimer les pipes qui ne sont plus visibles de la liste de pipes
+    pipeList.removeWhere((element) => !element.isVisible);
 
     for (var base in baseList) {
       base.update(t);
@@ -70,13 +80,8 @@ class FlappyGame extends Game {
       createBase();
     }
 
-    //déplacement des tubes
-    for (var element in pipeList) {
-      element.update(t);
-    }
+    bird.update(t);
 
-    //supprimer les pipes qui ne sont plus visibles de la liste de pipes
-    pipeList.removeWhere((element) => !element.isVisible);
 
   }
 
@@ -92,5 +97,13 @@ class FlappyGame extends Game {
     Base secondBase = Base(this, screenSize.width);
     baseList.add(firstBase);
     baseList.add(secondBase);
+  }
+
+  @override
+  void onTap() {
+    super.onTap();
+    print('onTap');
+    bird.onTap();
+
   }
 }
