@@ -13,6 +13,7 @@ import 'package:flappy_bird/composants/game_over.dart';
 import 'package:flappy_bird/composants/pipes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'composants/bird.dart';
 
@@ -28,7 +29,9 @@ class FlappyGame extends Game with TapDetector {
   GameOverScreen endMessage;
   bool isPlaying = false;
   int score = 0;
+  int highScore = 0;
   TextConfig scoreTextConfig;
+  SharedPreferences prefs;
 
   //Constructor
   FlappyGame() {
@@ -55,7 +58,7 @@ class FlappyGame extends Game with TapDetector {
     bird = Bird(this);
 
     timer.start();
-    endMessage = GameOverScreen(this);
+    endMessage = GameOverScreen(this, score);
 
     //initialize TextConfig
     scoreTextConfig = TextConfig(
@@ -74,7 +77,6 @@ class FlappyGame extends Game with TapDetector {
       }
       //affiche le bird
       bird.render(canvas);
-
       //on affiche le score
       scoreTextConfig.render(canvas, score.toString(),
           Position(screenSize.width / 2, screenSize.height / 8),
@@ -147,20 +149,26 @@ class FlappyGame extends Game with TapDetector {
     //check si le bird touche les tubes
     for (var element in pipeList) {
       if (element.hasCollided(bird.birdRect)) {
-        Flame.audio.play('hit.wav');
+        // Flame.audio.play('hit.wav');
+        playAudio('hit.wav');
+
         reset();
       }
     }
     //check si le bird touche le sol
     for (var element in baseList) {
       if (element.hasCollided(bird.birdRect)) {
-        Flame.audio.play('hit.wav');
+        // Flame.audio.play('hit.wav');
+        playAudio('hit.wav');
+
         reset();
       }
     }
     //check si le bird touche le "plafond"
     if (bird.birdRect.top <= 0) {
-      Flame.audio.play('hit.wav');
+      // Flame.audio.play('hit.wav');
+      playAudio('hit.wav');
+
       reset();
     }
   }
@@ -169,19 +177,37 @@ class FlappyGame extends Game with TapDetector {
     isPlaying = false;
     timer.stop();
     bird = Bird(this);
+    endMessage = GameOverScreen(this, score);
     score = 0;
   }
 
   void updateScore() {
-    pipeList.forEach((element) {
+    for (var element in pipeList) {
       if (element.canUpdateScore) {
         if (bird.birdRect.right >=
             element.topPipeBodyRect.left + element.topPipeBodyRect.width / 2) {
           score++;
-          Flame.audio.play('point.wav');
+
+          //update le meilleur score
+          if (score > highScore) {
+            saveHighScore();
+          }
+          // Flame.audio.play('point.wav');
+          playAudio('point.wav');
           element.canUpdateScore = false;
         }
       }
-    });
+    }
   }
+
+  void saveHighScore() async {
+    highScore = score;
+    prefs = await SharedPreferences.getInstance();
+    prefs.setInt('highScore', highScore);
+  }
+
+  void playAudio(String sound) async {
+    await Flame.audio.play(sound);
+  }
+
 }

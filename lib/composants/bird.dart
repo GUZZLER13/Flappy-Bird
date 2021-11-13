@@ -75,7 +75,9 @@ class Bird {
   }
 
   void onTap() {
-    Flame.audio.play('wing.wav');
+    // Flame.audio.play('wing.wav');
+    game.playAudio('wing.wav');
+
     isJumping = true;
   }
 }
