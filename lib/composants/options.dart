@@ -11,7 +11,7 @@ class Option {
 
   Option(this.game) {
     rectOption = Rect.fromLTWH(
-        game.screenSize.width / 10, game.screenSize.height / 27, 50, 50);
+        game.screenSize.width / 12, game.screenSize.height / 27, 50, 50);
     spriteOption = Sprite('option.png');
   }
 

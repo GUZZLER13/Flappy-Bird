@@ -19,6 +19,7 @@ import 'composants/bird.dart';
 import 'composants/cloud.dart';
 import 'composants/options.dart';
 import 'composants/rain.dart';
+import 'composants/start.dart';
 
 double speedCreatePipes = 1.5;
 
@@ -28,7 +29,9 @@ class FlappyGame extends Game with TapDetector {
   List<Base> baseList;
   List<Rain> rainList;
   List<Pipes> pipeList = [];
-  Timer timer;
+  Timer timerPipe;
+  Timer timerStart;
+  Timer timerStart2;
   Bird bird;
   Cloud cloud;
   GameOverScreen endMessage;
@@ -38,6 +41,7 @@ class FlappyGame extends Game with TapDetector {
   TextConfig scoreTextConfig;
   SharedPreferences prefs;
   Option option;
+  Start start;
 
 
   //Constructor
@@ -58,6 +62,9 @@ class FlappyGame extends Game with TapDetector {
     //pluie
     createRain();
 
+    //Start
+    start = Start(this);
+
     //sol
     createBase();
 
@@ -66,10 +73,26 @@ class FlappyGame extends Game with TapDetector {
 
 
     //pipes
-    timer = Timer(speedCreatePipes, repeat: true, callback: () {
+    timerPipe = Timer(speedCreatePipes, repeat: true, callback: () {
       Pipes newPipes = Pipes(this);
       pipeList.add(newPipes);
     });
+
+    timerStart = Timer(.5, repeat: true, callback: () {
+      start.startRect =   const Rect.fromLTWH(-1000, -1000, 0, 0);
+
+    });
+
+    timerStart2 = Timer(1, repeat: true, callback: () {
+
+      start.startRect =   Rect.fromLTWH(screenSize.width / 2 - 115,
+          screenSize.height - screenSize.height / 3.5, 230, 110);
+    });
+
+
+    timerPipe.start();
+    timerStart.start();
+    timerStart2.start();
 
     //bird
     bird = Bird(this);
@@ -77,7 +100,8 @@ class FlappyGame extends Game with TapDetector {
     //Cloud
     cloud = Cloud(this);
 
-    timer.start();
+
+
     endMessage = GameOverScreen(this, score);
 
     //initialize TextConfig
@@ -99,6 +123,8 @@ class FlappyGame extends Game with TapDetector {
       element.render(canvas);
     }
 
+
+
     //Cloud
     cloud.render(canvas);
 
@@ -114,6 +140,9 @@ class FlappyGame extends Game with TapDetector {
       //affiche le bird
       bird.render(canvas);
     } else {
+
+      //Start
+      start.render(canvas);
 
       //option
       option.render(canvas);
@@ -132,7 +161,8 @@ class FlappyGame extends Game with TapDetector {
   void update(double t) {
     if (isPlaying) {
 
-      timer.update(t);
+      timerPipe.update(t);
+
 
       //déplacement des tubes
       for (var element in pipeList) {
@@ -146,6 +176,9 @@ class FlappyGame extends Game with TapDetector {
       updateScore();
       gameOver();
     }
+
+    timerStart.update(t);
+    timerStart2.update(t);
 
     for (var base in baseList) {
       base.update(t);
@@ -217,7 +250,7 @@ class FlappyGame extends Game with TapDetector {
     } else {
       pipeList.clear();
       isPlaying = true;
-      timer.start();
+      timerPipe.start();
     }
   }
 
@@ -254,7 +287,7 @@ class FlappyGame extends Game with TapDetector {
 
   void reset() {
     isPlaying = false;
-    timer.stop();
+    timerPipe.stop();
     bird = Bird(this);
 
     endMessage = GameOverScreen(this, score);
