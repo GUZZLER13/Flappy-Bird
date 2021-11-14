@@ -267,6 +267,7 @@ class FlappyGame extends Game with TapDetector {
   void getHighScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     highScore = prefs.getInt('highScore') ?? 0;
+    print('le score le meilleur : $highScore');
   }
 
   void playAudio(String sound) async {
