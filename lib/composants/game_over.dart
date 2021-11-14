@@ -14,7 +14,7 @@ class GameOverScreen {
   Sprite messageSprite;
   final FlappyGame game;
   final int score;
-  int highCore;
+  int highScore;
   TextConfig scoreTextConfig;
   TextConfig highScoreTextConfig;
 
@@ -39,13 +39,13 @@ class GameOverScreen {
       scoreTextConfig.render(canvas, '', Position(0, 0));
       highScoreTextConfig.render(
           canvas,
-          'High Score : $highCore',
+          'HighScore : $highScore',
           Position(game.screenSize.width / 2, game.screenSize.height / 9.5),
           anchor: Anchor.center);
     } else {
       highScoreTextConfig.render(
           canvas,
-          'High Score : $highCore',
+          'HighScore : $highScore',
           Position(game.screenSize.width / 2,
               game.screenSize.height - game.screenSize.height / 6),
           anchor: Anchor.center);
@@ -58,6 +58,7 @@ class GameOverScreen {
 
   void getHighScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    highCore = prefs.getInt('highScore') ?? 0;
+    highScore = prefs.getInt('highScore') ?? 0;
+    print('le score le meilleur : $highScore');
   }
 }

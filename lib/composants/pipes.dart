@@ -95,9 +95,7 @@ class Pipes {
     bottomPipeHeadRect = bottomPipeHeadRect.translate(-t * baseMovement, 0);
     topPipeBodyRect = topPipeBodyRect.translate(-t * baseMovement, 0);
     topPipeHeadRect = topPipeHeadRect.translate(-t * baseMovement, 0);
-
-    // baseMovement += 0.01;
-
+    speedBackground();
     // on vérifie si le tube est sorti
     if (topPipeHeadRect.right < 0) {
       isVisible = false;
@@ -126,6 +124,15 @@ class Pipes {
       return true;
     } else {
       return false;
+    }
+  }
+
+  //Pour accélérer la difficulté
+  void speedBackground() {
+    if (game.isPlaying) {
+      baseMovement *= 1.00002;
+    } else {
+      baseMovement = 200;
     }
   }
 }

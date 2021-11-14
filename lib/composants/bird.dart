@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/time.dart';
 
@@ -46,7 +45,6 @@ class Bird {
     }
 
     birdRect = birdRect.translate(0, birdMovement);
-
   }
 
   void render(Canvas canvas) {
@@ -68,7 +66,6 @@ class Bird {
     // on affiche le bird
     // birdSprite.renderRect(canvas, const Rect.fromLTWH(0, 0, BIRD_WDTH, BIRD_HEIGHT));
     birdSprite.renderRect(canvas, birdRect);
-
 
     //restore l'etat du canvas
     // canvas.restore();

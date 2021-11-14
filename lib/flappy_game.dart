@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'composants/bird.dart';
+import 'composants/cloud.dart';
+import 'composants/rain.dart';
 
 double speedCreatePipes = 1.5;
 
@@ -23,13 +25,15 @@ class FlappyGame extends Game with TapDetector {
   Size screenSize;
   Background background;
   List<Base> baseList;
+  List<Rain> rainList;
   List<Pipes> pipeList = [];
   Timer timer;
   Bird bird;
+  Cloud cloud;
   GameOverScreen endMessage;
   bool isPlaying = false;
   int score = 0;
-  int highScore = 0;
+  int highScore;
   TextConfig scoreTextConfig;
   SharedPreferences prefs;
 
@@ -42,8 +46,12 @@ class FlappyGame extends Game with TapDetector {
   void initialize() async {
     resize(await Flame.util.initialDimensions());
 
+    getHighScore();
     //fond d'écran
     background = Background(this);
+
+    //pluie
+    createRain();
 
     //sol
     createBase();
@@ -56,6 +64,9 @@ class FlappyGame extends Game with TapDetector {
 
     //bird
     bird = Bird(this);
+
+    //Cloud
+    cloud = Cloud(this);
 
     timer.start();
     endMessage = GameOverScreen(this, score);
@@ -70,17 +81,25 @@ class FlappyGame extends Game with TapDetector {
     //Ordre des éléments ici très important ---> comme des calques
     background.render(canvas);
 
+    //Pluie
+    for (var element in rainList) {
+      element.render(canvas);
+    }
+
+    //Cloud
+    cloud.render(canvas);
+
     if (isPlaying) {
+      //on affiche le score
+      scoreTextConfig.render(canvas, score.toString(),
+          Position(screenSize.width / 2, screenSize.height / 8),
+          anchor: Anchor.center);
       //on affiche les tubes
       for (var element in pipeList) {
         element.render(canvas);
       }
       //affiche le bird
       bird.render(canvas);
-      //on affiche le score
-      scoreTextConfig.render(canvas, score.toString(),
-          Position(screenSize.width / 2, screenSize.height / 8),
-          anchor: Anchor.center);
     } else {
       endMessage.render(canvas);
     }
@@ -112,10 +131,27 @@ class FlappyGame extends Game with TapDetector {
       base.update(t);
     }
 
+    for (var rain in rainList) {
+      rain.update(t);
+    }
+
+    cloud.update(t);
+
     //retirer l'element du sol qui n'est plus visible et remettre la liste de bases comme au début (2 bases)
     baseList.removeWhere((element) => !element.isVisible);
     if (baseList.length < 2) {
       createBase();
+    }
+
+    //retirer les nuages sortis de l'écran
+    if (!cloud.isVisible) {
+      cloud = Cloud(this);
+    }
+
+    //retirer l'element de la pluiel qui n'est plus visible et remettre la pluie comme au début (4 fois l'image)
+    rainList.removeWhere((element) => !element.isVisible);
+    if (rainList.length < 5) {
+      createRain();
     }
   }
 
@@ -131,6 +167,23 @@ class FlappyGame extends Game with TapDetector {
     Base secondBase = Base(this, screenSize.width);
     baseList.add(firstBase);
     baseList.add(secondBase);
+  }
+
+  void createRain() {
+    rainList = [];
+    Rain firstRain = Rain(this, 0, 0);
+    Rain secondRain = Rain(this, screenSize.width, 0);
+    Rain thirdRain = Rain(this, 0, -screenSize.height);
+    Rain fourthRain = Rain(this, screenSize.width, -screenSize.height);
+    Rain fiveRain = Rain(this, screenSize.width * 2, 0);
+    Rain sixRain = Rain(this, screenSize.width * 2, -screenSize.height);
+
+    rainList.add(thirdRain);
+    rainList.add(fourthRain);
+    rainList.add(secondRain);
+    rainList.add(firstRain);
+    rainList.add(fiveRain);
+    rainList.add(sixRain);
   }
 
   @override
@@ -177,24 +230,29 @@ class FlappyGame extends Game with TapDetector {
     isPlaying = false;
     timer.stop();
     bird = Bird(this);
+
     endMessage = GameOverScreen(this, score);
     score = 0;
+    scoreTextConfig = TextConfig(
+        fontSize: 70, fontFamily: 'flappy_font', color: Colors.white);
   }
 
   void updateScore() {
-    for (var element in pipeList) {
-      if (element.canUpdateScore) {
+    for (var pipes in pipeList) {
+      if (pipes.canUpdateScore == true) {
         if (bird.birdRect.right >=
-            element.topPipeBodyRect.left + element.topPipeBodyRect.width / 2) {
+            pipes.topPipeBodyRect.left + pipes.topPipeBodyRect.width / 2) {
           score++;
+          Flame.audio.play('point.wav');
+          pipes.canUpdateScore = false;
 
-          //update le meilleur score
+          // update le meilleur score
           if (score > highScore) {
+            print('le score est meilleur que le highscore!!!');
+            scoreTextConfig = TextConfig(
+                fontSize: 70, fontFamily: 'flappy_font', color: Colors.red);
             saveHighScore();
           }
-          // Flame.audio.play('point.wav');
-          playAudio('point.wav');
-          element.canUpdateScore = false;
         }
       }
     }
@@ -206,8 +264,12 @@ class FlappyGame extends Game with TapDetector {
     prefs.setInt('highScore', highScore);
   }
 
+  void getHighScore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    highScore = prefs.getInt('highScore') ?? 0;
+  }
+
   void playAudio(String sound) async {
     await Flame.audio.play(sound);
   }
-
 }

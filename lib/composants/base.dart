@@ -25,8 +25,7 @@ class Base {
 
   void update(double t) {
     baseRect = baseRect.translate(-t * baseMovement, 0);
-    // baseMovement += 0.01;
-
+    speedBackground();
     //si le rectangle de droite sort de l'écran
     if (baseRect.right <= 0) {
       isVisible = false;
@@ -42,6 +41,15 @@ class Base {
       return true;
     } else {
       return false;
+    }
+  }
+
+  //Pour accélérer la difficulté
+  void speedBackground() {
+    if (game.isPlaying) {
+      baseMovement *= 1.00002;
+    } else {
+      baseMovement = 200;
     }
   }
 }
