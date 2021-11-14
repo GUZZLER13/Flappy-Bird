@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'composants/bird.dart';
 import 'composants/cloud.dart';
+import 'composants/options.dart';
 import 'composants/rain.dart';
 
 double speedCreatePipes = 1.5;
@@ -36,17 +37,21 @@ class FlappyGame extends Game with TapDetector {
   int highScore;
   TextConfig scoreTextConfig;
   SharedPreferences prefs;
+  Option option;
+
 
   //Constructor
   FlappyGame() {
     initialize();
   }
 
-  // On crée cette fonction pour attendre les dimensions de l'écran avant de lancer la premiere boucle
+  //On crée cette fonction pour attendre les dimensions de l'écran avant de lancer la premiere boucle
   void initialize() async {
     resize(await Flame.util.initialDimensions());
 
+    //On récupère le highscore
     getHighScore();
+
     //fond d'écran
     background = Background(this);
 
@@ -55,6 +60,10 @@ class FlappyGame extends Game with TapDetector {
 
     //sol
     createBase();
+
+    //option
+    option = Option(this);
+
 
     //pipes
     timer = Timer(speedCreatePipes, repeat: true, callback: () {
@@ -78,8 +87,12 @@ class FlappyGame extends Game with TapDetector {
 
   @override
   void render(Canvas canvas) {
+
     //Ordre des éléments ici très important ---> comme des calques
     background.render(canvas);
+
+
+
 
     //Pluie
     for (var element in rainList) {
@@ -101,17 +114,24 @@ class FlappyGame extends Game with TapDetector {
       //affiche le bird
       bird.render(canvas);
     } else {
+
+      //option
+      option.render(canvas);
+
       endMessage.render(canvas);
     }
 
     for (var element in baseList) {
       element.render(canvas);
     }
+
+
   }
 
   @override
   void update(double t) {
     if (isPlaying) {
+
       timer.update(t);
 
       //déplacement des tubes
@@ -153,6 +173,9 @@ class FlappyGame extends Game with TapDetector {
     if (rainList.length < 5) {
       createRain();
     }
+
+    option.update(t);
+
   }
 
   @override
@@ -197,6 +220,9 @@ class FlappyGame extends Game with TapDetector {
       timer.start();
     }
   }
+
+
+
 
   void gameOver() {
     //check si le bird touche les tubes

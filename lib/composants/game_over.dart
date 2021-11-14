@@ -21,36 +21,32 @@ class GameOverScreen {
     game.getHighScore();
     messageSprite = Sprite('message.png');
     messageRect = Rect.fromCenter(
-        center: Offset(game.screenSize.width / 2, game.screenSize.height / 2),
+        center: Offset(game.screenSize.width / 2, game.screenSize.height / 1.8),
         width: 276,
         height: 400);
 
     scoreTextConfig = TextConfig(
-        fontFamily: 'flappy_font', fontSize: 45, color: Colors.white);
+        fontFamily: 'flappy_font', fontSize: 40, color: Colors.white);
     highScoreTextConfig =
-        TextConfig(fontFamily: 'flappy_font', fontSize: 40, color: Colors.red);
+        TextConfig(fontFamily: 'flappy_font', fontSize: 30, color: Colors.red);
 
   }
 
-  void update(double t) {}
+  void update(double t) {
+
+  }
 
   void render(Canvas canvas) {
-    if (score == 0) {
-      scoreTextConfig.render(canvas, '', Position(0, 0));
-      highScoreTextConfig.render(canvas, 'HighScore : ${game.highScore ?? 0}',
-          Position(game.screenSize.width / 2, game.screenSize.height / 9.5),
-          anchor: Anchor.center);
-    } else {
       highScoreTextConfig.render(
           canvas,
-          'HighScore : ${game.highScore ?? 0}',
+          'High Score : ${game.highScore ?? 0}',
           Position(game.screenSize.width / 2,
-              game.screenSize.height - game.screenSize.height / 6),
+              game.screenSize.height / 4.4),
           anchor: Anchor.center);
       scoreTextConfig.render(canvas, 'Score : $score',
-          Position(game.screenSize.width / 2, game.screenSize.height / 9.5),
+          Position(game.screenSize.width / 2, game.screenSize.height / 5.8),
           anchor: Anchor.center);
-    }
+
     messageSprite.renderRect(canvas, messageRect);
   }
 }
